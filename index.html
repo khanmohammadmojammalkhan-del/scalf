@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCALF Slim Pro Card 2026</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --scalf-blue: #00d2ff;
+            --accent-green: #00ff88;
+            --bg-dark: #010409;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--bg-dark);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        /* --- ৩ সেকেন্ডের eFootball Style Loading --- */
+        #loader {
+            display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, #001a33 0%, #000 100%);
+            z-index: 10000;
+            flex-direction: column; justify-content: center; align-items: center;
+        }
+
+        .efootball-loader {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            border: 5px solid rgba(0, 210, 255, 0.1);
+            border-top: 5px solid var(--scalf-blue);
+            position: relative;
+            animation: spin 1s linear infinite;
+        }
+
+        .efootball-loader::after {
+            content: '⚽';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 30px;
+            animation: pulse 0.8s infinite alternate;
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes pulse { from { transform: translate(-50%, -50%) scale(0.8); } to { transform: translate(-50%, -50%) scale(1.2); } }
+
+        /* --- Registration Form --- */
+        .reg-container {
+            background: #001529; border: 1px solid var(--scalf-blue);
+            padding: 20px; border-radius: 12px; width: 100%; max-width: 320px;
+            text-align: center; margin-top: 20px; box-shadow: 0 0 20px rgba(0, 210, 255, 0.2);
+        }
+        .reg-container h2 { font-family: 'Orbitron', sans-serif; font-size: 16px; color: var(--scalf-blue); margin-bottom: 15px; }
+        .input-box { text-align: left; margin-bottom: 10px; }
+        .input-box label { display: block; color: var(--scalf-blue); font-size: 11px; margin-bottom: 4px; }
+        input {
+            width: 100%; padding: 10px; background: #000; border: 1px solid #1e3a5f;
+            color: var(--accent-green); border-radius: 5px; outline: none; font-size: 13px;
+        }
+        .btn-gen {
+            width: 100%; padding: 12px; background: var(--scalf-blue); color: #000;
+            font-weight: 900; border: none; border-radius: 5px; cursor: pointer; text-transform: uppercase;
+        }
+
+        /* --- SLIM & TALL CARD DESIGN (Width Reduced) --- */
+        #playerCard {
+            display: none;
+            width: 300px; /* Width কমানো হয়েছে */
+            height: 540px; /* Height বাড়ানো হয়েছে */
+            background: #000;
+            border: 4px solid var(--scalf-blue);
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            background-image: linear-gradient(180deg, #001226 0%, #000 100%);
+        }
+
+        .card-header {
+            background: var(--scalf-blue); height: 45px;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .scalf-text { font-family: 'Orbitron', sans-serif; font-size: 26px; font-weight: 900; color: #000; }
+
+        /* ফটো ফ্রেমকে বড় এবং লম্বা করা হয়েছে যাতে ভালো ফিট হয় */
+        .photo-frame {
+            width: 240px; 
+            height: 220px; /* উচ্চতা বাড়ানো হয়েছে */
+            margin: 15px auto;
+            border: 2px solid #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #111;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+        }
+        #resPhoto { width: 100%; height: 100%; object-fit: cover; }
+
+        .info-area { padding: 0 20px; }
+        .label { color: var(--scalf-blue); font-size: 9px; font-weight: 900; letter-spacing: 1px; }
+        .value { 
+            display: block; font-size: 16px; color: #fff; font-weight: 700; 
+            margin-bottom: 6px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-transform: uppercase;
+        }
+
+        /* ইউজার আইডি বড় বক্স */
+        .id-highlight-box {
+            background: rgba(0, 255, 136, 0.15);
+            padding: 8px; border-radius: 8px; 
+            border: 2px solid var(--accent-green);
+            margin-top: 5px; text-align: center;
+        }
+        #resID { font-size: 20px; color: var(--accent-green); font-weight: 900; font-family: 'Orbitron', sans-serif; }
+
+        .card-footer {
+            position: absolute; bottom: 0; width: 100%; height: 75px;
+            background: rgba(0, 15, 30, 0.98);
+            border-top: 2px solid var(--scalf-blue);
+            display: flex; align-items: center; padding: 0 15px;
+        }
+        #qrcode { background: #fff; padding: 3px; border-radius: 3px; }
+        .verify-text { margin-left: 10px; color: var(--accent-green); font-size: 10px; font-weight: 900; line-height: 1.2; }
+
+        .download-btn {
+            display: none; margin-top: 15px; padding: 12px 35px;
+            background: var(--accent-green); color: #000; border-radius: 50px;
+            font-weight: 900; cursor: pointer; border: none; text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loader">
+        <div class="efootball-loader"></div>
+        <p style="color: var(--scalf-blue); margin-top: 25px; font-weight: 900; font-size: 14px; letter-spacing: 2px;">SCALF LOADING...</p>
+    </div>
+
+    <div class="reg-container" id="formContainer">
+        <h2>SCALF REGISTRATION</h2>
+        <form id="regForm">
+            <div class="input-box"><label>PLAYER NAME</label><input type="text" id="pName" placeholder="Full Name" required></div>
+            <div class="input-box"><label>DEVICE</label><input type="text" id="pDevice" placeholder="Model" required></div>
+            <div class="input-box"><label>USER ID</label><input type="text" id="pID" placeholder="XXX-XXX-XXX" required></div>
+            <div class="input-box"><label>PHOTO</label><input type="file" id="pPhoto" accept="image/*" required></div>
+            <button type="submit" class="btn-gen">GENERATE CARD</button>
+        </form>
+    </div>
+
+    <div id="playerCard">
+        <div class="card-header"><div class="scalf-text">SCALF</div></div>
+        
+        <div class="photo-frame"><img src="" id="resPhoto"></div>
+
+        <div class="info-area">
+            <span class="label">NAME</span>
+            <span class="value" id="resName">---</span>
+            
+            <span class="label">DEVICE</span>
+            <span class="value" id="resDevice">---</span>
+            
+            <span class="label">PLAYER USER ID</span>
+            <div class="id-highlight-box">
+                <span id="resID">000-000-000</span>
+            </div>
+        </div>
+
+        <div class="card-footer">
+            <div id="qrcode"></div>
+            <div class="verify-text">✔ VERIFIED PLAYER<br>SEASON 2026 OFFICIAL</div>
+        </div>
+    </div>
+
+    <button class="download-btn" id="downloadBtn">DOWNLOAD PNG</button>
+
+    <script>
+        document.getElementById('regForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const n = document.getElementById('pName').value;
+            const d = document.getElementById('pDevice').value;
+            const i = document.getElementById('pID').value;
+            const p = document.getElementById('pPhoto').files[0];
+
+            document.getElementById('formContainer').style.display = 'none';
+            document.getElementById('loader').style.display = 'flex';
+
+            setTimeout(() => {
+                document.getElementById('resName').innerText = n.toUpperCase();
+                document.getElementById('resDevice').innerText = d.toUpperCase();
+                document.getElementById('resID').innerText = i; 
+
+                document.getElementById('qrcode').innerHTML = "";
+                new QRCode(document.getElementById("qrcode"), {
+                    text: i,
+                    width: 45, height: 45
+                });
+
+                const reader = new FileReader();
+                reader.onload = function() {
+                    document.getElementById('resPhoto').src = reader.result;
+                    document.getElementById('loader').style.display = 'none';
+                    document.getElementById('playerCard').style.display = 'block';
+                    document.getElementById('downloadBtn').style.display = 'block';
+                }
+                reader.readAsDataURL(p);
+            }, 3000); 
+        });
+
+        document.getElementById('downloadBtn').addEventListener('click', function() {
+            html2canvas(document.getElementById('playerCard'), { scale: 3 }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'SCALF_Pro_Card.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        });
+    </script>
+</body>
+</html>
